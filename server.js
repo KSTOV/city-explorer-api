@@ -8,31 +8,41 @@ const app = express();
 app.use(cors());
 const PORT = process.env.PORT;
 
+app.get('./data/weather.json');
+app.get('/weather',getWeather);
+app.get('/*', (req, res) => res.status(403).send('not found'));
+
+
 class Forecast {
-    constructor(date, description) {
-        this.date = date;
-        this.description = description;
+    constructor(obj) {
+        this.date = obj.valid_date;
+        this.description = obj.weather.description;
     }
 }
 
 function getWeather(req, res) {
-    res.status(200).send(weather);
-    let weatherQuery = req.query;
+    let searchQuery = req.query.city;
+    let lat = req.query.lat;
+    let lon = req.query.lon;
 
-    let result = weather.find(city => city.city_name.toLowerCase() === weatherQuery.city_name.toLowerCase() && Math.floor(city.lat) === Math.floor(weatherQuery.lat) && Math.floor(city.lon) === Math.floor(weatherQuery.lon));
-
-    let forcast = result ? result.data.map(day => new Forecast(day.valid_date, day.weather.description)) : false;
-
-    if(forcast){
-        res.send(forcast);
-    } else {
-        res.status(403).send('not found');
+    try {
+        const cityToSend = weather.find(city => {
+            if((city.lat === lat && city.lon === lon) || city.city_name === searchQuery) {
+                return true;
+            }
+            return false;
+        });
+        if (cityToSend) {
+            const forecastData = cityToSend.data.map(city => new Forecast(city));
+            res.status(200).send(forecastData);
+        } else {
+            res.status(404).send('Not Found');
+        }
+    } catch (e) {
+        res.status(500).send('server error');
     }
 }
 
-app.get('./data/weather.json');
-app.get('/weather',getWeather);
-app.get('/*', (req, res) => res.status(403).send('not found'));
 app.listen(PORT, () => console.log(`Listening at port:${PORT}`));
 
 
