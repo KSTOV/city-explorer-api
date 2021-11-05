@@ -10,7 +10,7 @@ class Movies {
         this.overview = obj.overview;
         this.image_url = `https://image.tmdb.org/t/p/w500${obj.poster_path}`
         this.popularity = obj.popularity;
-        this.released_date = obj.released_date;
+        this.release_date = obj.release_date;
     }
 }
 
