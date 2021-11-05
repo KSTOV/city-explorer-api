@@ -26,10 +26,10 @@ let getWeather = async (req, res) => {
     let lat = req.query.lat;
     let lon = req.query.lon;
     
-    const url = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lon}&key=${weatherAPI}&days=5`;
+    const url = `https://api.weatherbit.io/v2.0/forecast/daily?lat=${lat}&lon=${lon}&key=${weatherAPI}&days=10`;
     
     try {
-        let result = await axios.get(url);
+        let result = await axios(url);
         console.log(result);
         let forcastData = result.data.data.map(forcast => new Forecast(forcast));
         console.log(forcastData);
@@ -62,7 +62,7 @@ let getMovies = async (req, res) => {
     const url = `https://api.themoviedb.org/3/search/movie?api_key=${movieAPI}&query=${movieName}`;
     
     try {
-        let result = await axios.get(url);
+        let result = await axios(url);
         let movieData = result.data.results.map(movie => new Movies(movie));
         console.log(movieData);
         if(movieData) {
